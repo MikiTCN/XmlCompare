@@ -1,7 +1,7 @@
 # XmlCompare
 is used to find what attributes or sub elements have changed for a given element name.<br/>
 It finds all elements with a given name (Register or ParameterItem is default, but can be changed)</br>
-To match two elements the ID= attribute or <ID> subelement is matched. (The ID name can be changed).</br>
+To match two elements the ID= attribute or &lt;ID&gt; subelement is matched. (The ID name can be changed).</br>
 
 When an element is matched by ID
 - it will list all the attribute / subelements that do not match
