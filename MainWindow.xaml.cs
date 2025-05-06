@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using Microsoft.Win32;
+using XmlCompare.Properties;
 using Path = System.IO.Path;
 
 namespace XmlCompare
@@ -29,6 +30,10 @@ namespace XmlCompare
         {
             InitializeComponent();
             ViewModel = new XmlCompareViewModel();
+            ViewModel.CompareFileName = Settings.Default.CompareFileName;
+            ViewModel.CompareName = Path.GetFileName(ViewModel.CompareFileName);
+            ViewModel.CompareToFileName = Settings.Default.CompareToFileName;
+            ViewModel.CompareToName = Path.GetFileName(ViewModel.CompareToFileName);
             DataContext = ViewModel;
         }
 
@@ -36,22 +41,26 @@ namespace XmlCompare
 
         private void OpenCompareClick(object sender, RoutedEventArgs e)
         {
-            var showDialogResult = OpenXmlFileDialog(e, out var xmlFileName);
+            var showDialogResult = OpenXmlFileDialog(e, ViewModel.CompareFileName, out var xmlFileName);
             if (showDialogResult == true)
             {
                 ViewModel.CompareFileName = xmlFileName;
                 ViewModel.CompareName = Path.GetFileName(xmlFileName);
+                Settings.Default.CompareFileName = xmlFileName;
+                Settings.Default.Save();
                 RunCompareClick(sender, e);
             }
         }
 
         private void OpenCompareToClick(object sender, RoutedEventArgs e)
         {
-            var showDialogResult = OpenXmlFileDialog(e, out var xmlFileName);
+            var showDialogResult = OpenXmlFileDialog(e, ViewModel.CompareToFileName, out var xmlFileName);
             if (showDialogResult == true)
             {
                 ViewModel.CompareToFileName = xmlFileName;
                 ViewModel.CompareToName = Path.GetFileName(xmlFileName);
+                Settings.Default.CompareToFileName = xmlFileName;
+                Settings.Default.Save();
                 RunCompareClick(sender, e);
             }
 
@@ -75,14 +84,17 @@ namespace XmlCompare
             }
         }
 
-        private static bool? OpenXmlFileDialog(RoutedEventArgs e, out string xmlFileName)
+        private static bool? OpenXmlFileDialog(RoutedEventArgs e, string oldFileName, out string newFileName)
         {
             e.Handled = true;
             var ofd = new OpenFileDialog();
             ofd.DefaultExt = ".xml";
             ofd.Filter = "WXM Definition Files (.xml)|*.xml";
+            ofd.FileName = oldFileName;
+            if (!string.IsNullOrEmpty(oldFileName))
+                ofd.InitialDirectory = Path.GetDirectoryName(oldFileName);
             var showDialogResult = ofd.ShowDialog();
-            xmlFileName = ofd.FileName;
+            newFileName = ofd.FileName;
             return showDialogResult;
         }
 
